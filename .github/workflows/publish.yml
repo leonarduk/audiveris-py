@@ -23,13 +23,28 @@ jobs:
         env:
           TAG: ${{ github.event.release.tag_name }}
         run: |
-          expected="${TAG#v}"
-          for f in dist/*; do
-            case "$(basename "$f")" in
-              audiveris_py-"$expected"-*.whl|audiveris_py-"$expected".tar.gz) ;;
-              *) echo "::error::$f does not carry version $expected from tag $TAG"; exit 1 ;;
-            esac
-          done
+          python - "${TAG#v}" <<'EOF'
+          import email, pathlib, sys, tarfile, zipfile
+
+          expected = sys.argv[1]
+          files = sorted(pathlib.Path("dist").iterdir())
+          if not files:
+              print("::error::dist/ is empty")
+              sys.exit(1)
+          for f in files:
+              if f.suffix == ".whl":
+                  with zipfile.ZipFile(f) as z:
+                      meta = z.read(next(n for n in z.namelist() if n.endswith(".dist-info/METADATA")))
+              else:
+                  with tarfile.open(f) as t:
+                      member = next(m for m in t.getmembers() if m.name.count("/") == 1 and m.name.endswith("/PKG-INFO"))
+                      meta = t.extractfile(member).read()
+              version = email.message_from_bytes(meta)["Version"]
+              if version != expected:
+                  print(f"::error::{f.name} has metadata version {version}, expected {expected} from the release tag")
+                  sys.exit(1)
+              print(f"{f.name}: version {version}")
+          EOF
       - run: twine check --strict dist/*
       - uses: actions/upload-artifact@v4
         with:
