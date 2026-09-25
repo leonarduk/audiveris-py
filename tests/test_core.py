@@ -17,7 +17,7 @@ CONTAINER = (
     '<?xml version="1.0"?><container><rootfiles>'
     '<rootfile full-path="{name}"/></rootfiles></container>'
 )
-REPO_EXAMPLES = Path(__file__).resolve().parents[2] / "data" / "examples"
+SAMPLE_IMAGE = Path(__file__).resolve().parent / "data" / "chula.png"
 
 
 def write_mxl(path: Path, inner: str = "score.xml") -> None:
@@ -143,6 +143,6 @@ def test_cli_returns_error_code_on_failure(tmp_path, score, capsys):
 
 @pytest.mark.skipif(not os.environ.get("AUDIVERIS_BIN"), reason="set AUDIVERIS_BIN to run against real Audiveris")
 def test_real_audiveris_on_example(tmp_path):
-    produced = convert(REPO_EXAMPLES / "chula.png", tmp_path, timeout=600)
+    produced = convert(SAMPLE_IMAGE, tmp_path, timeout=600)
     assert produced
     assert "<score-partwise" in read_musicxml(produced[0])

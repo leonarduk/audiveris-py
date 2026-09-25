@@ -6,14 +6,14 @@ scores to MusicXML. It does not reimplement any recognition: it runs
 
 ## Requirements
 
-- An installed Audiveris (see the main project README), reachable as `audiveris`
+- An installed [Audiveris](https://github.com/Audiveris/audiveris), reachable as `audiveris`
   on `PATH`, via the `AUDIVERIS_BIN` environment variable, or passed explicitly.
 - Python 3.9+. No third-party runtime dependencies.
 
 ## Install
 
 ```sh
-pip install ./python
+pip install git+https://github.com/leonarduk/audiveris-py.git
 ```
 
 ## Command line
@@ -43,7 +43,6 @@ full console `output`.
 ## Tests
 
 ```sh
-cd python
 pip install -e '.[test]'
 pytest
 ```
@@ -53,3 +52,5 @@ The unit tests use a fake Audiveris executable. To also run against a real insta
 ```sh
 AUDIVERIS_BIN=/path/to/Audiveris pytest
 ```
+
+`tests/data/chula.png` is a sample score from the Audiveris project (AGPL-3.0).
