@@ -6,8 +6,11 @@ scores to MusicXML. It does not reimplement any recognition: it runs
 
 ## Requirements
 
-- An installed [Audiveris](https://github.com/Audiveris/audiveris), reachable as `audiveris`
-  on `PATH`, via the `AUDIVERIS_BIN` environment variable, or passed explicitly.
+- An installed [Audiveris](https://github.com/Audiveris/audiveris). It is found via
+  `--audiveris`/the `audiveris=` argument, the `AUDIVERIS_BIN` environment variable,
+  `audiveris` or `Audiveris` on `PATH`, or the installer's default location
+  (`/opt/audiveris/bin/Audiveris`, `C:\Program Files\Audiveris\Audiveris.exe`,
+  `/Applications/Audiveris.app/Contents/MacOS/Audiveris`).
 - Python 3.9+. No third-party runtime dependencies.
 
 ## Install
@@ -21,6 +24,25 @@ Or the latest development version:
 ```sh
 pip install git+https://github.com/leonarduk/audiveris-py.git
 ```
+
+## Check your setup
+
+```sh
+audiveris-py doctor
+```
+
+```
+[ OK ] Audiveris executable: /opt/audiveris/bin/Audiveris
+[ OK ] Audiveris starts: version 5.7.1
+[WARN] OCR language data: no *.traineddata in ~/.config/AudiverisLtd/audiveris/tessdata; lyrics and other text will not be recognised
+       -> Download e.g. eng.traineddata from https://github.com/tesseract-ocr/tessdata into ~/.config/AudiverisLtd/audiveris/tessdata.
+```
+
+It exits non-zero if Audiveris can't be found or won't start. Missing OCR language
+files are only a warning: notes are still recognised, text isn't.
+
+`doctor` is reserved as the first argument; to convert a file literally named
+`doctor`, pass it as `./doctor`.
 
 ## Command line
 

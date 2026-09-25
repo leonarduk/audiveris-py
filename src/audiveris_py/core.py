@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import sys
 import zipfile
 from pathlib import Path
 from typing import Sequence
@@ -23,6 +24,16 @@ class AudiverisError(RuntimeError):
         self.output = output
 
 
+def default_install_locations(platform: str = sys.platform) -> list[Path]:
+    """Where the official Audiveris installers put the launcher."""
+    if platform.startswith("win"):
+        program_files = os.environ.get("ProgramFiles", r"C:\Program Files")
+        return [Path(program_files) / "Audiveris" / "Audiveris.exe"]
+    if platform == "darwin":
+        return [Path("/Applications/Audiveris.app/Contents/MacOS/Audiveris")]
+    return [Path("/opt/audiveris/bin/Audiveris")]
+
+
 def find_audiveris(explicit: str | os.PathLike[str] | None = None) -> str:
     candidates = [explicit, os.environ.get(ENV_VAR)]
     for candidate in candidates:
@@ -35,8 +46,13 @@ def find_audiveris(explicit: str | os.PathLike[str] | None = None) -> str:
         resolved = shutil.which(name)
         if resolved:
             return resolved
+    for location in default_install_locations():
+        resolved = shutil.which(str(location))
+        if resolved:
+            return resolved
     raise AudiverisError(
-        f"Audiveris executable not found on PATH; install Audiveris or set {ENV_VAR}"
+        f"Audiveris executable not found on PATH or in the default install location; "
+        f"install Audiveris or set {ENV_VAR}"
     )
 
 
