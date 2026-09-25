@@ -1,5 +1,9 @@
 # audiveris-py
 
+[![PyPI](https://img.shields.io/pypi/v/audiveris-py)](https://pypi.org/project/audiveris-py/)
+[![CI](https://github.com/leonarduk/audiveris-py/actions/workflows/ci.yml/badge.svg)](https://github.com/leonarduk/audiveris-py/actions/workflows/ci.yml)
+[![License: AGPL-3.0](https://img.shields.io/github/license/leonarduk/audiveris-py)](LICENSE)
+
 Thin Python wrapper around the Audiveris command line, for converting PDF or image
 scores to MusicXML. It does not reimplement any recognition: it runs
 `audiveris -batch -export` and returns the files that run produced.
