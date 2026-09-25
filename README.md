@@ -62,15 +62,34 @@ when the book holds several movements. `--uncompressed` also writes a plain
 ## Library
 
 ```python
-from audiveris_py import convert, read_musicxml
+from audiveris_py import AudiverisError, convert, read_musicxml
 
-files = convert("score.pdf", "out/")
-xml = read_musicxml(files[0])
+try:
+    mxl_files = convert("scores/sonata.pdf", "out/", timeout=900)
+except AudiverisError as ex:
+    print(f"Audiveris failed (exit {ex.returncode}): {ex}")
+    print(ex.output)  # full Audiveris console log
+    raise SystemExit(1)
+
+for mxl in mxl_files:
+    target = mxl.with_suffix(".musicxml")
+    target.write_text(read_musicxml(mxl), encoding="utf-8")
+    print(f"{mxl} -> {target}")
 ```
 
-`convert` raises `AudiverisError` when Audiveris exits non-zero (status 1 = failure,
-2 = timeout, 3 = both) or exports nothing. The error carries `returncode` and the
-full console `output`.
+- `convert` returns a list: one `.mxl` per movement (`out/sonata/sonata.mxl`, or
+  `sonata.mvtN.mxl` when Audiveris splits the score). Only files written by this
+  run are returned, so reusing an output folder is safe.
+- `.mxl` is standard compressed MusicXML, so MuseScore, Finale, Sibelius and
+  `music21` open it directly. `read_musicxml` is only needed for the plain XML text.
+- Options: `sheets=[1, 2]` to process specific pages, `audiveris="/path/to/Audiveris"`
+  to skip the lookup, `timeout=` in seconds.
+- `convert` raises `AudiverisError` when Audiveris exits non-zero (status 1 = failure,
+  2 = timeout, 3 = both) or exports nothing. The error carries `returncode` and the
+  full console `output`. A missing input raises `FileNotFoundError`.
+
+For a runnable script that handles a single PDF or a whole folder, see
+[`examples/pdf_to_musicxml.py`](examples/pdf_to_musicxml.py).
 
 ## Tests
 
