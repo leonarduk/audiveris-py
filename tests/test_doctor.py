@@ -132,6 +132,47 @@ def test_find_audiveris_uses_default_install_location(isolated, monkeypatch):
     assert core.find_audiveris() == str(launcher)
 
 
+@pytest.mark.parametrize(
+    "platform,expected",
+    [
+        ("linux", Path("/opt/audiveris/bin/Audiveris")),
+        ("darwin", Path("/Applications/Audiveris.app/Contents/MacOS/Audiveris")),
+        ("win32", Path("/pf/Audiveris/Audiveris.exe")),
+    ],
+)
+def test_default_install_locations(platform, expected, monkeypatch):
+    monkeypatch.setenv("ProgramFiles", "/pf")
+    assert core.default_install_locations(platform) == [expected]
+
+
+def test_check_runs_times_out(tmp_path):
+    script = tmp_path / "slow"
+    script.write_text(f"#!{sys.executable}\nimport time\ntime.sleep(10)\n")
+    script.chmod(script.stat().st_mode | stat.S_IXUSR)
+    check = check_runs(str(script), timeout=0.5)
+    assert check.status == FAIL
+    assert "within 0.5s" in check.detail
+
+
+def test_tessdata_reports_ignored_prefix(tmp_path):
+    check = check_tessdata("linux", {"HOME": str(tmp_path), "TESSDATA_PREFIX": str(tmp_path / "missing")})
+    assert "TESSDATA_PREFIX=" in check.detail
+    assert "ignored" in check.detail
+
+
+@pytest.mark.parametrize("value", ["0", "-5"])
+def test_cli_doctor_rejects_non_positive_timeout(value, capsys):
+    with pytest.raises(SystemExit) as info:
+        main(["doctor", "--timeout", value])
+    assert info.value.code == 2
+    assert "must be greater than 0" in capsys.readouterr().err
+
+
+def test_dotted_doctor_path_is_converted_not_diagnosed(isolated, capsys):
+    assert main(["./doctor"]) == 1
+    assert "error:" in capsys.readouterr().err
+
+
 def test_format_report_shows_hints_only_for_problems():
     from audiveris_py.doctor import Check
 

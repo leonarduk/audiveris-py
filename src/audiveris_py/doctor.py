@@ -101,15 +101,17 @@ def check_tessdata(platform: str = sys.platform, env: Mapping[str, str] = os.env
     if folder is None:
         return Check(name, WARN, "could not work out the Audiveris config folder",
                      "Set TESSDATA_PREFIX to a folder containing *.traineddata files.")
+    prefix = env.get("TESSDATA_PREFIX")
+    ignored = f" (TESSDATA_PREFIX={prefix} ignored: not a directory)" if prefix and Path(prefix) != folder else ""
     languages = sorted(p.stem for p in folder.glob("*.traineddata")) if folder.is_dir() else []
     if not languages:
         return Check(
             name,
             WARN,
-            f"no *.traineddata in {folder}; lyrics and other text will not be recognised",
+            f"no *.traineddata in {folder}{ignored}; lyrics and other text will not be recognised",
             f"Download e.g. eng.traineddata from {TESSDATA_URL} into {folder}.",
         )
-    return Check(name, OK, f"{', '.join(languages)} in {folder}")
+    return Check(name, OK, f"{', '.join(languages)} in {folder}{ignored}")
 
 
 def run_checks(audiveris: str | os.PathLike[str] | None = None, timeout: float = 120) -> list[Check]:

@@ -41,6 +41,9 @@ audiveris-py doctor
 It exits non-zero if Audiveris can't be found or won't start. Missing OCR language
 files are only a warning: notes are still recognised, text isn't.
 
+`doctor` is reserved as the first argument; to convert a file literally named
+`doctor`, pass it as `./doctor`.
+
 ## Command line
 
 ```sh
