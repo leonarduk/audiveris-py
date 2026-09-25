@@ -13,6 +13,12 @@ scores to MusicXML. It does not reimplement any recognition: it runs
 ## Install
 
 ```sh
+pip install audiveris-py
+```
+
+Or the latest development version:
+
+```sh
 pip install git+https://github.com/leonarduk/audiveris-py.git
 ```
 
@@ -54,3 +60,12 @@ AUDIVERIS_BIN=/path/to/Audiveris pytest
 ```
 
 `tests/data/chula.png` is a sample score from the Audiveris project (AGPL-3.0).
+
+## Releasing
+
+Publishing uses PyPI trusted publishing, so no API token is stored in GitHub.
+
+1. Bump `version` in `pyproject.toml` and merge to `main`.
+2. Create a GitHub release with tag `v<version>` (e.g. `v0.1.0`).
+3. The `Publish to PyPI` workflow checks the tag matches the version, builds,
+   and uploads.

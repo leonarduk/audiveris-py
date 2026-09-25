@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=61"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,11 +8,25 @@ version = "0.1.0"
 description = "Python wrapper around the Audiveris CLI for converting PDF/image scores to MusicXML"
 readme = "README.md"
 requires-python = ">=3.9"
-license = { text = "AGPL-3.0-or-later" }
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
+keywords = ["audiveris", "omr", "optical music recognition", "musicxml", "sheet music"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Multimedia :: Sound/Audio",
+    "Topic :: Scientific/Engineering :: Image Recognition",
+]
 dependencies = []
 
 [project.urls]
 Homepage = "https://github.com/leonarduk/audiveris-py"
+Issues = "https://github.com/leonarduk/audiveris-py/issues"
 Audiveris = "https://github.com/Audiveris/audiveris"
 
 [project.optional-dependencies]
