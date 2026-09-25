@@ -31,7 +31,10 @@ def main() -> int:
     parser.add_argument("--timeout", type=float, help="seconds allowed per PDF")
     args = parser.parse_args()
 
-    pdfs = sorted(args.source.glob("*.pdf")) if args.source.is_dir() else [args.source]
+    if args.source.is_dir():
+        pdfs = sorted(p for p in args.source.iterdir() if p.is_file() and p.suffix.lower() == ".pdf")
+    else:
+        pdfs = [args.source]
     if not pdfs:
         print(f"no PDFs found in {args.source}", file=sys.stderr)
         return 1
@@ -47,9 +50,13 @@ def main() -> int:
             print(f"{pdf}: FAILED: file not found", file=sys.stderr)
         except AudiverisError as ex:
             failures += 1
-            print(f"{pdf.name}: FAILED: {str(ex).splitlines()[0]}", file=sys.stderr)
+            summary = (str(ex).splitlines() or ["Audiveris failed"])[0]
+            print(f"{pdf.name}: FAILED: {summary}", file=sys.stderr)
             if ex.output:
                 print(ex.output, file=sys.stderr)
+        except Exception as ex:  # e.g. corrupt .mxl or disk full while unpacking
+            failures += 1
+            print(f"{pdf.name}: FAILED: {type(ex).__name__}: {ex}", file=sys.stderr)
 
     return 1 if failures else 0
 
