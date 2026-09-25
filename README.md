@@ -110,7 +110,12 @@ AUDIVERIS_BIN=/path/to/Audiveris pytest
 
 Publishing uses PyPI trusted publishing, so no API token is stored in GitHub.
 
-1. Bump `version` in `pyproject.toml` and merge to `main`.
-2. Create a GitHub release with tag `v<version>` (e.g. `v0.1.0`).
-3. The `Publish to PyPI` workflow checks the tag matches the version, builds,
-   and uploads.
+The package version comes from the git tag via `setuptools-scm`; there is no
+version to bump in the code.
+
+1. Merge what you want released to `main`.
+2. Create a GitHub release with a new tag `v<version>` (e.g. `v0.1.2`) on `main`.
+3. The `Publish to PyPI` workflow builds from that tag, checks the built files carry
+   that version, and uploads.
+
+Builds from untagged commits get a development version such as `0.1.2.dev3+g1a2b3c4`.

@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=77"]
+requires = ["setuptools>=77", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "audiveris-py"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Python wrapper around the Audiveris CLI for converting PDF/image scores to MusicXML"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -37,6 +37,10 @@ audiveris-py = "audiveris_py.__main__:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+# Version comes from the git tag (v0.1.1 -> 0.1.1); untagged commits get a .devN version.
+[tool.setuptools_scm]
+fallback_version = "0.0.0"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

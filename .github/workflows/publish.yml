@@ -12,20 +12,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Check release tag matches package version
+      - run: pip install build twine
+      - run: python -m build
+      - name: Check built version matches the release tag
         env:
           TAG: ${{ github.event.release.tag_name }}
         run: |
-          version=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
-          if [ "${TAG#v}" != "$version" ]; then
-            echo "::error::Release tag '$TAG' does not match pyproject version '$version'"
-            exit 1
-          fi
-      - run: pip install build twine
-      - run: python -m build
+          python - "${TAG#v}" <<'EOF'
+          import email, pathlib, sys, tarfile, zipfile
+
+          expected = sys.argv[1]
+          files = sorted(pathlib.Path("dist").iterdir())
+          if not files:
+              print("::error::dist/ is empty")
+              sys.exit(1)
+          for f in files:
+              if f.suffix == ".whl":
+                  with zipfile.ZipFile(f) as z:
+                      meta = z.read(next(n for n in z.namelist() if n.endswith(".dist-info/METADATA")))
+              else:
+                  with tarfile.open(f) as t:
+                      member = next(m for m in t.getmembers() if m.name.count("/") == 1 and m.name.endswith("/PKG-INFO"))
+                      meta = t.extractfile(member).read()
+              version = email.message_from_bytes(meta)["Version"]
+              if version != expected:
+                  print(f"::error::{f.name} has metadata version {version}, expected {expected} from the release tag")
+                  sys.exit(1)
+              print(f"{f.name}: version {version}")
+          EOF
       - run: twine check --strict dist/*
       - uses: actions/upload-artifact@v4
         with:
