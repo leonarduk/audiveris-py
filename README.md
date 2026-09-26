@@ -37,7 +37,8 @@ The latest development version:
 
 ```sh
 pip install git+https://github.com/leonarduk/audiveris-py.git
-uv add git+https://github.com/leonarduk/audiveris-py.git
+uv tool install git+https://github.com/leonarduk/audiveris-py.git   # CLI
+uv add git+https://github.com/leonarduk/audiveris-py.git            # library dependency
 ```
 
 Installing the package does not install Audiveris itself; see [Requirements](#requirements).
