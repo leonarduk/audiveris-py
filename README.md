@@ -19,15 +19,29 @@ scores to MusicXML. It does not reimplement any recognition: it runs
 
 ## Install
 
+With pip:
+
 ```sh
 pip install audiveris-py
 ```
 
-Or the latest development version:
+With [uv](https://docs.astral.sh/uv/):
+
+```sh
+uv tool install audiveris-py   # the audiveris-py command, in its own environment
+uvx audiveris-py doctor        # or run it once without installing
+uv add audiveris-py            # as a dependency of your uv project, to use the library
+```
+
+The latest development version:
 
 ```sh
 pip install git+https://github.com/leonarduk/audiveris-py.git
+uv tool install git+https://github.com/leonarduk/audiveris-py.git   # CLI
+uv add git+https://github.com/leonarduk/audiveris-py.git            # library dependency
 ```
+
+Installing the package does not install Audiveris itself; see [Requirements](#requirements).
 
 ## Check your setup
 
@@ -94,14 +108,24 @@ For a runnable script that handles a single PDF or a whole folder, see
 ## Tests
 
 ```sh
+uv sync --extra test
+uv run pytest
+```
+
+or with pip:
+
+```sh
 pip install -e '.[test]'
 pytest
 ```
 
+Work from a git clone: the version is derived from git tags, so a source tree without
+`.git` installs as `0.0.0`.
+
 The unit tests use a fake Audiveris executable. To also run against a real install:
 
 ```sh
-AUDIVERIS_BIN=/path/to/Audiveris pytest
+AUDIVERIS_BIN=/path/to/Audiveris uv run pytest
 ```
 
 `tests/data/chula.png` is a sample score from the Audiveris project (AGPL-3.0).
